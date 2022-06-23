@@ -1,0 +1,21 @@
+pb8 i2c1_scl
+pb9 i2c1_sda
+
+pb10 i2c2_scl
+pb11 i2c2_sda
+
+pc6 uart6_tx
+pc7 uart6_rx
+
+pc10 uart4_tx
+pc11 uart4_rx
+
+pb3 spi1_sclk
+pb5 spi1_mosi
+pa4 spi1_ssel
+pb4 spi1_miso
+
+pe2 spi4_sclk
+pe4 spi4_ssel
+pe5 spi4_miso
+pe6 spi4_mosi
