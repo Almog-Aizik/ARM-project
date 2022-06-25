@@ -61,6 +61,8 @@ PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
 int btn = 0;
+int protocol = 2;
+int listen = 0;
 char send[] = "test message\n\r";
 char mem[100] = { 0 };
 /* USER CODE END PV */
@@ -79,12 +81,6 @@ static void MX_I2C2_Init(void);
 static void MX_SPI2_Init(void);
 /* USER CODE BEGIN PFP */
 int flag = 0;
-void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
- {
-	flag = 1;
-
- }
-
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
 {
 
@@ -94,15 +90,14 @@ void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
    */
 }
 
-void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c)
+void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c)
 {
-  /* Prevent unused argument(s) compilation warning */
-  int test = 0;
-  test = 1;
+	listen = 1;
+}
 
-  /* NOTE : This function should not be modified, when the callback is needed,
-            the HAL_I2C_MasterTxCpltCallback could be implemented in the user file
-   */
+void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+
 }
 /* USER CODE END PFP */
 
@@ -159,11 +154,23 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	 //HAL_SPI_TransmitReceive_IT(&hspi2, (uint8_t *)send, (uint8_t *)mem, 100);
-	 HAL_SPI_Receive_DMA(&hspi2, (uint8_t *)mem, 100);
-	 HAL_SPI_Transmit_DMA(&hspi4, (uint8_t *)send, sizeof(send));
-	//  HAL_I2C_Slave_Receive_DMA(&hi2c2, mem, 100);
-	//  HAL_I2C_Master_Transmit_DMA(&hi2c1, 20, send, 100);
+	 //SPI send and receive
+	 if(protocol == 1)
+	 {
+		 HAL_SPI_Receive_DMA(&hspi2, (uint8_t *)mem, 100);
+	 	 HAL_SPI_Transmit_DMA(&hspi4, (uint8_t *)send, sizeof(send));
+	 }
+	 else if(protocol == 2)
+	 {
+		 HAL_I2C_EnableListen_IT(&hi2c2);
+		 HAL_I2C_Master_Transmit_DMA(&hi2c1, 20, send, 1);
+		 while(listen)
+		 {
+			 listen = 0;
+			 HAL_I2C_Slave_Receive(&hi2c2, mem, 100, 200);
+		 }
+	 }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
