@@ -60,9 +60,9 @@ DMA_HandleTypeDef hdma_usart6_rx;
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
-int btn = 0;
-int protocol = 2;
-int listen = 1;
+//char listen = 1;
+char flag = 0;
+char protocol = 2;
 char send[] = "test message\n\r";
 char mem[100] = { 0 };
 /* USER CODE END PV */
@@ -80,13 +80,19 @@ static void MX_USART6_UART_Init(void);
 static void MX_I2C2_Init(void);
 static void MX_SPI2_Init(void);
 /* USER CODE BEGIN PFP */
-int flag = 0;
+//callbacks for receiving
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
 {
-  flag = 1;
+	flag = 1;
 }
 
 void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+	flag = 1;
+//	listen = 1;
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	flag = 1;
 }
@@ -139,7 +145,7 @@ int main(void)
   MX_I2C2_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_Transmit(&huart3, "start", 6, 20);
+  HAL_UART_Transmit(&huart3, "start\n\r", 6, 20);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -152,15 +158,25 @@ int main(void)
 		 HAL_SPI_Receive_DMA(&hspi2, (uint8_t *)mem, 100);
 	 	 HAL_SPI_Transmit_DMA(&hspi4, (uint8_t *)send, sizeof(send));
 	 }
+
+//	 else if(protocol == 2 && listen)
+	 //I2C send and receive
 	 else if(protocol == 2)
 	 {
-			 HAL_I2C_Master_Transmit_DMA(&hi2c1, 20, send, sizeof(send));
-			 HAL_I2C_Slave_Receive_DMA(&hi2c2, mem, sizeof(send));
+		 HAL_I2C_Master_Transmit_DMA(&hi2c1, 20, send, sizeof(send));
+		 HAL_I2C_Slave_Receive_DMA(&hi2c2, mem, sizeof(send));
+//			 listen = 0;
 	 }
-
+	 //UART send and receive
+	 else if(protocol == 3)
+	 {
+		 HAL_UART_Transmit_DMA(&huart4, send, sizeof(send));
+		 HAL_UART_Receive_DMA(&huart6, mem, sizeof(send));
+	 }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	 //debugging
 	 if(flag)
 	 {
 		 HAL_UART_Transmit(&huart3, mem, 15, 20);
