@@ -33,6 +33,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define DEBUG
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -59,6 +60,10 @@ DMA_HandleTypeDef hdma_usart6_rx;
 
 /* USER CODE BEGIN PV */
 extern struct netif gnetif;
+char flag = 0;
+char protocol = 3;
+char send[] = "test message\n\r";
+char mem[100] = { 0 };
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -73,7 +78,20 @@ static void MX_SPI4_Init(void);
 static void MX_UART4_Init(void);
 static void MX_USART6_UART_Init(void);
 /* USER CODE BEGIN PFP */
+void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
+{
+	flag = 1;
+}
 
+void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+	flag = 1;
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	flag = 1;
+}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -120,6 +138,7 @@ int main(void)
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
   udpServer_init();
+  HAL_UART_Transmit(&huart3, "start\n\r", 6, 20);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -131,6 +150,33 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  ethernetif_input(&gnetif);
 	  sys_check_timeouts();
+	  if(protocol == 1)
+	  {
+	  	 HAL_SPI_Receive_DMA(&hspi2, (uint8_t *)mem, 100);
+	   	 HAL_SPI_Transmit_DMA(&hspi4, (uint8_t *)send, sizeof(send));
+	  }
+	  else if(protocol == 2)
+	  {
+		  HAL_I2C_Master_Transmit_DMA(&hi2c1, 20, send, sizeof(send));
+		  HAL_I2C_Slave_Receive_DMA(&hi2c2, mem, sizeof(send));
+	  }
+	  //UART send and receive
+	  else if(protocol == 3)
+	  {
+	  	HAL_UART_Receive_DMA(&huart6, mem, sizeof(send));
+	  	HAL_UART_Transmit_DMA(&huart4, send, sizeof(send));
+	  }
+	  /* USER CODE END WHILE */
+
+	  /* USER CODE BEGIN 3 */
+	  //debugging
+	  #ifdef DEBUG
+	  if(flag)
+	  {
+		  HAL_UART_Transmit(&huart3, mem, 15, 20);
+		  flag = 0;
+	  }
+	  #endif
   }
   /* USER CODE END 3 */
 }
@@ -242,7 +288,7 @@ static void MX_I2C2_Init(void)
   hi2c2.Instance = I2C2;
   hi2c2.Init.ClockSpeed = 100000;
   hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c2.Init.OwnAddress1 = 0;
+  hi2c2.Init.OwnAddress1 = 20;
   hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c2.Init.OwnAddress2 = 0;
