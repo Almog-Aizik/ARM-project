@@ -10,10 +10,10 @@ pc7 uart6_rx
 pc10 uart4_tx
 pc11 uart4_rx
 
-pb3 spi1_sclk
-pb5 spi1_mosi
-pa4 spi1_ssel
-pb4 spi1_miso
+pb12 spi2_sclk
+pc2 spi2_mosi
+pc3 spi2_ssel
+pd4 spi2_miso
 
 pe2 spi4_sclk
 pe4 spi4_ssel

@@ -1,4 +1,3 @@
-/* USER CODE BEGIN Header */
 /**
  ******************************************************************************
   * File Name          : LWIP.c
@@ -7,16 +6,16 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2022 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; Copyright (c) 2022 STMicroelectronics.
+  * All rights reserved.</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * This software component is licensed by ST under Ultimate Liberty license
+  * SLA0044, the "License"; You may not use this file except in compliance with
+  * the License. You may obtain a copy of the License at:
+  *                             www.st.com/SLA0044
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
 #include "lwip.h"
@@ -31,24 +30,21 @@
 
 /* USER CODE END 0 */
 /* Private function prototypes -----------------------------------------------*/
-static void ethernet_link_status_updated(struct netif *netif);
-static void Ethernet_Link_Periodic_Handle(struct netif *netif);
 /* ETH Variables initialization ----------------------------------------------*/
 void Error_Handler(void);
 
-/* DHCP Variables initialization ---------------------------------------------*/
-uint32_t DHCPfineTimer = 0;
-uint32_t DHCPcoarseTimer = 0;
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */
-uint32_t EthernetLinkTimer;
 
 /* Variables Initialization */
 struct netif gnetif;
 ip4_addr_t ipaddr;
 ip4_addr_t netmask;
 ip4_addr_t gw;
+uint8_t IP_ADDRESS[4];
+uint8_t NETMASK_ADDRESS[4];
+uint8_t GATEWAY_ADDRESS[4];
 
 /* USER CODE BEGIN 2 */
 
@@ -59,13 +55,30 @@ ip4_addr_t gw;
   */
 void MX_LWIP_Init(void)
 {
+  /* IP addresses initialization */
+  IP_ADDRESS[0] = 192;
+  IP_ADDRESS[1] = 168;
+  IP_ADDRESS[2] = 0;
+  IP_ADDRESS[3] = 132;
+  NETMASK_ADDRESS[0] = 255;
+  NETMASK_ADDRESS[1] = 255;
+  NETMASK_ADDRESS[2] = 255;
+  NETMASK_ADDRESS[3] = 0;
+  GATEWAY_ADDRESS[0] = 192;
+  GATEWAY_ADDRESS[1] = 168;
+  GATEWAY_ADDRESS[2] = 0;
+  GATEWAY_ADDRESS[3] = 1;
+
+/* USER CODE BEGIN IP_ADDRESSES */
+/* USER CODE END IP_ADDRESSES */
+
   /* Initilialize the LwIP stack without RTOS */
   lwip_init();
 
-  /* IP addresses initialization with DHCP (IPv4) */
-  ipaddr.addr = 0;
-  netmask.addr = 0;
-  gw.addr = 0;
+  /* IP addresses initialization without DHCP (IPv4) */
+  IP4_ADDR(&ipaddr, IP_ADDRESS[0], IP_ADDRESS[1], IP_ADDRESS[2], IP_ADDRESS[3]);
+  IP4_ADDR(&netmask, NETMASK_ADDRESS[0], NETMASK_ADDRESS[1] , NETMASK_ADDRESS[2], NETMASK_ADDRESS[3]);
+  IP4_ADDR(&gw, GATEWAY_ADDRESS[0], GATEWAY_ADDRESS[1], GATEWAY_ADDRESS[2], GATEWAY_ADDRESS[3]);
 
   /* add the network interface (IPv4/IPv6) without RTOS */
   netif_add(&gnetif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &ethernet_input);
@@ -85,12 +98,9 @@ void MX_LWIP_Init(void)
   }
 
   /* Set the link callback function, this function is called on change of link status*/
-  netif_set_link_callback(&gnetif, ethernet_link_status_updated);
+  netif_set_link_callback(&gnetif, ethernetif_update_config);
 
   /* Create the Ethernet link handler thread */
-
-  /* Start DHCP negotiation for a network interface (IPv4) */
-  dhcp_start(&gnetif);
 
 /* USER CODE BEGIN 3 */
 
@@ -103,26 +113,6 @@ void MX_LWIP_Init(void)
 /* USER CODE BEGIN 4 */
 /* USER CODE END 4 */
 #endif
-
-/**
-  * @brief  Ethernet Link periodic check
-  * @param  netif
-  * @retval None
-  */
-static void Ethernet_Link_Periodic_Handle(struct netif *netif)
-{
-/* USER CODE BEGIN 4_4_1 */
-/* USER CODE END 4_4_1 */
-
-  /* Ethernet Link every 100ms */
-  if (HAL_GetTick() - EthernetLinkTimer >= 100)
-  {
-    EthernetLinkTimer = HAL_GetTick();
-    ethernet_link_check_state(netif);
-  }
-/* USER CODE BEGIN 4_4 */
-/* USER CODE END 4_4 */
-}
 
 /**
  * ----------------------------------------------------------------------
@@ -146,29 +136,8 @@ void MX_LWIP_Process(void)
   /* Handle timeouts */
   sys_check_timeouts();
 
-  Ethernet_Link_Periodic_Handle(&gnetif);
-
 /* USER CODE BEGIN 4_3 */
 /* USER CODE END 4_3 */
-}
-
-/**
-  * @brief  Notify the User about the network interface config status
-  * @param  netif: the network interface
-  * @retval None
-  */
-static void ethernet_link_status_updated(struct netif *netif)
-{
-  if (netif_is_up(netif))
-  {
-/* USER CODE BEGIN 5 */
-/* USER CODE END 5 */
-  }
-  else /* netif is down */
-  {
-/* USER CODE BEGIN 6 */
-/* USER CODE END 6 */
-  }
 }
 
 #if defined ( __CC_ARM )  /* MDK ARM Compiler */
@@ -244,3 +213,4 @@ u32_t sio_tryread(sio_fd_t fd, u8_t *data, u32_t len)
 }
 #endif /* MDK ARM Compiler */
 
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
