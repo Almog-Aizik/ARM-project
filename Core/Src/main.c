@@ -60,7 +60,7 @@ DMA_HandleTypeDef hdma_usart6_rx;
 
 /* USER CODE BEGIN PV */
 extern struct netif gnetif;
-char flag = 0;
+char flag = 1;
 char protocol = 3;
 char send[] = "test message\n\r";
 char mem[100] = { 0 };
@@ -152,8 +152,8 @@ int main(void)
 	  sys_check_timeouts();
 	  if(protocol == 1)
 	  {
-	  	 HAL_SPI_Receive_DMA(&hspi2, (uint8_t *)mem, 100);
-	   	 HAL_SPI_Transmit_DMA(&hspi4, (uint8_t *)send, sizeof(send));
+			 HAL_SPI_Receive_DMA(&hspi2, (uint8_t *)mem, sizeof(send));
+			 HAL_SPI_Transmit_DMA(&hspi4, (uint8_t *)send, sizeof(send));
 	  }
 	  else if(protocol == 2)
 	  {
