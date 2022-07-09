@@ -20,10 +20,12 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "lwip.h"
+#include "udp.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "udpServerRAW.h"
+#include "string.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -33,7 +35,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define DEBUG
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -60,10 +62,15 @@ DMA_HandleTypeDef hdma_usart6_rx;
 
 /* USER CODE BEGIN PV */
 extern struct netif gnetif;
-char flag = 1;
+struct udp_pcb *udp_info;
+char received = 0;
+char flag = 0;
 char protocol = 3;
-char send[] = "test message\n\r";
-char mem[100] = { 0 };
+char send[100]= { 0 };
+char mem[101] = { 0 };
+char header[108];
+int len;
+int UDPlen;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -91,6 +98,22 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	flag = 1;
+}
+void udp_transmit(struct udp_pcb *upcb, int len, char mem[100])
+{
+//  prepare variables
+	ip_addr_t addr = upcb->remote_ip;
+	u16_t port = upcb->remote_port;
+//	prepare buffer
+	struct pbuf *txBuf;
+	txBuf = pbuf_alloc(PBUF_TRANSPORT,len, PBUF_RAM);
+	pbuf_take(txBuf, mem, len);
+//	send data
+	udp_connect(upcb, &addr, port);
+	udp_send(upcb, txBuf);
+	udp_disconnect(upcb);
+//	release buffer
+	pbuf_free(txBuf);
 }
 /* USER CODE END PFP */
 
@@ -145,38 +168,54 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 	  ethernetif_input(&gnetif);
 	  sys_check_timeouts();
-	  if(protocol == 1)
+	  if(received)
 	  {
-			 HAL_SPI_Receive_DMA(&hspi2, (uint8_t *)mem, sizeof(send));
-			 HAL_SPI_Transmit_DMA(&hspi4, (uint8_t *)send, sizeof(send));
-	  }
-	  else if(protocol == 2)
-	  {
-		  HAL_I2C_Master_Transmit_DMA(&hi2c1, 20, send, sizeof(send));
-		  HAL_I2C_Slave_Receive_DMA(&hi2c2, mem, sizeof(send));
-	  }
-	  //UART send and receive
-	  else if(protocol == 3)
-	  {
-	  	HAL_UART_Receive_DMA(&huart6, mem, sizeof(send));
-	  	HAL_UART_Transmit_DMA(&huart4, send, sizeof(send));
+		  protocol = mem[0];
+//		  SPI send and receive
+		  if(mem[0] == '1')
+		  {
+			  HAL_SPI_Receive_DMA(&hspi2, (uint8_t *)send, len);
+			  HAL_SPI_Transmit_DMA(&hspi4, (uint8_t *)&mem[1], len);
+			  while(flag == 0);
+			  UDPlen = sprintf(header, "SPI- %s\n\r", send);
+		  }
+//		  I2C send and receive
+		  else if(protocol == '2')
+		  {
+			  HAL_I2C_Master_Transmit_DMA(&hi2c1, 20, (uint8_t *)&mem[1], len);
+			  HAL_I2C_Slave_Receive_DMA(&hi2c2, (uint8_t *)send, len);
+			  while(flag == 0);
+			  UDPlen = sprintf(header, "I2C- %s\n\r", send);
+		  }
+//		  UART send and receive
+		  else if(protocol == '3')
+		  {
+			  HAL_UART_Receive_DMA(&huart6, (uint8_t *)send, len);
+			  HAL_UART_Transmit_DMA(&huart4, (uint8_t *)&mem[1], len);
+			  while(flag == 0);
+			  UDPlen = sprintf(header, "UART - %s\n\r", send);
+		  }
+		  received = 0;
 	  }
 	  /* USER CODE END WHILE */
 
 	  /* USER CODE BEGIN 3 */
-	  //debugging
-	  #ifdef DEBUG
 	  if(flag)
 	  {
-		  HAL_UART_Transmit(&huart3, mem, 15, 20);
+//		  HAL_UART_Transmit(&huart3, send, 15, 20);
+		  header[UDPlen + 1] = 3;
+		  udp_transmit(udp_info, UDPlen, header);
 		  flag = 0;
+//		  reset memory back to 0
+		  memset(send, 0, 100);
 	  }
-	  #endif
+
   }
   /* USER CODE END 3 */
 }

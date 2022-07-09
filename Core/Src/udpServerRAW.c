@@ -71,35 +71,21 @@ void udpServer_init(void)
 
 void udp_receive_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, const ip_addr_t *addr, u16_t port)
 {
-	struct pbuf *txBuf;
+    /* global variable to use in main */
+	extern struct udp_pcb *udp_info;
+	extern char mem[100];
+	extern char received;
+	extern int len;
+	/* save data for later use */
+	received = 1;
+	len = p->len - 1;
+	udp_info = upcb;
+	udp_info->remote_ip = *addr;
+	udp_info->remote_port = port;
 
-	/* Get the IP of the Client */
-	char *remoteIP = ipaddr_ntoa(addr);
-
-	char buf[100];
-
-
-	int len = sprintf (buf,"Hello %s From UDP SERVER\n", (char*)p->payload);
-
-	/* allocate pbuf from RAM*/
-	txBuf = pbuf_alloc(PBUF_TRANSPORT,len, PBUF_RAM);
-
-	/* copy the data into the buffer  */
-	pbuf_take(txBuf, buf, len);
-
-	/* Connect to the remote client */
-	udp_connect(upcb, addr, port);
-
-	/* Send a Reply to the Client */
-	udp_send(upcb, txBuf);
-
-	/* free the UDP connection, so we can accept new clients */
-	udp_disconnect(upcb);
-
-	/* Free the p_tx buffer */
-	pbuf_free(txBuf);
-
-	/* Free the p buffer */
+	/* save the data for later use */
+	memcpy(mem,(char*)p->payload,p->len);
+	/* free p buffer */
 	pbuf_free(p);
 }
 
