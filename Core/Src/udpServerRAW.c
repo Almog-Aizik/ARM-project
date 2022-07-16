@@ -82,8 +82,6 @@ void udp_receive_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, const
 	udp_info = upcb;
 	udp_info->remote_ip = *addr;
 	udp_info->remote_port = port;
-
-	/* save the data for later use */
 	memcpy(mem,(char*)p->payload,p->len);
 	/* free p buffer */
 	pbuf_free(p);

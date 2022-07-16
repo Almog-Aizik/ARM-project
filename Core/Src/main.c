@@ -68,7 +68,7 @@ char flag = 0;
 char protocol = 3;
 char send[100]= { 0 };
 char mem[101] = { 0 };
-char header[108];
+char header[110];
 int len;
 int UDPlen;
 /* USER CODE END PV */
@@ -161,7 +161,6 @@ int main(void)
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
   udpServer_init();
-  HAL_UART_Transmit(&huart3, "start\n\r", 6, 20);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -178,7 +177,7 @@ int main(void)
 	  {
 		  protocol = mem[0];
 //		  SPI send and receive
-		  if(mem[0] == '1')
+		  if(protocol == '1')
 		  {
 			  HAL_SPI_Receive_DMA(&hspi2, (uint8_t *)send, len);
 			  HAL_SPI_Transmit_DMA(&hspi4, (uint8_t *)&mem[1], len);
@@ -190,7 +189,9 @@ int main(void)
 		  {
 			  HAL_I2C_Master_Transmit_DMA(&hi2c1, 20, (uint8_t *)&mem[1], len);
 			  HAL_I2C_Slave_Receive_DMA(&hi2c2, (uint8_t *)send, len);
+			  //wait for the data to be received
 			  while(flag == 0);
+			  //add a header to the data and prepare it to be sent back
 			  UDPlen = sprintf(header, "I2C- %s\n\r", send);
 		  }
 //		  UART send and receive
@@ -198,7 +199,9 @@ int main(void)
 		  {
 			  HAL_UART_Receive_DMA(&huart6, (uint8_t *)send, len);
 			  HAL_UART_Transmit_DMA(&huart4, (uint8_t *)&mem[1], len);
+			  //wait for the data to be received
 			  while(flag == 0);
+			  //add a header to the data and prepare it to be sent back
 			  UDPlen = sprintf(header, "UART - %s\n\r", send);
 		  }
 		  received = 0;
