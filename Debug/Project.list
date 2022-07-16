@@ -41,11 +41,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  18 .debug_line   00029658  00000000  00000000  0008a1b9  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    000ef09e  00000000  00000000  000b3811  2**0
+ 19 .debug_str    000ef0ab  00000000  00000000  000b3811  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .comment      00000050  00000000  00000000  001a28af  2**0
+ 20 .comment      00000050  00000000  00000000  001a28bc  2**0
                   CONTENTS, READONLY
- 21 .debug_frame  00006cfc  00000000  00000000  001a2900  2**2
+ 21 .debug_frame  00006cfc  00000000  00000000  001a290c  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -423,7 +423,7 @@ void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
  8000596:	b083      	sub	sp, #12
  8000598:	af00      	add	r7, sp, #0
  800059a:	6078      	str	r0, [r7, #4]
-	flag1 = 1;
+	SPIflag = 1;
  800059c:	4b04      	ldr	r3, [pc, #16]	; (80005b0 <HAL_SPI_RxCpltCallback+0x1c>)
  800059e:	2201      	movs	r2, #1
  80005a0:	701a      	strb	r2, [r3, #0]
@@ -444,7 +444,7 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
  80005b6:	b083      	sub	sp, #12
  80005b8:	af00      	add	r7, sp, #0
  80005ba:	6078      	str	r0, [r7, #4]
-	flag = 1;
+	I2Cflag = 1;
  80005bc:	4b04      	ldr	r3, [pc, #16]	; (80005d0 <HAL_I2C_SlaveRxCpltCallback+0x1c>)
  80005be:	2201      	movs	r2, #1
  80005c0:	701a      	strb	r2, [r3, #0]
@@ -465,7 +465,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
  80005d6:	b083      	sub	sp, #12
  80005d8:	af00      	add	r7, sp, #0
  80005da:	6078      	str	r0, [r7, #4]
-	flag2 = 1;
+	UARTflag = 1;
  80005dc:	4b04      	ldr	r3, [pc, #16]	; (80005f0 <HAL_UART_RxCpltCallback+0x1c>)
  80005de:	2201      	movs	r2, #1
  80005e0:	701a      	strb	r2, [r3, #0]
@@ -707,7 +707,7 @@ int main(void)
  8000736:	4861      	ldr	r0, [pc, #388]	; (80008bc <main+0x210>)
  8000738:	f006 f828 	bl	800678c <HAL_SPI_Transmit_DMA>
 			  //wait for the data to be received
-			  if(Timeout(&flag1) == 0)
+			  if(Timeout(&SPIflag) == 0)
  800073c:	4860      	ldr	r0, [pc, #384]	; (80008c0 <main+0x214>)
  800073e:	f7ff ff8a 	bl	8000656 <Timeout>
  8000742:	4603      	mov	r3, r0
@@ -741,7 +741,7 @@ int main(void)
  800076c:	4603      	mov	r3, r0
  800076e:	4a57      	ldr	r2, [pc, #348]	; (80008cc <main+0x220>)
  8000770:	6013      	str	r3, [r2, #0]
-				  flag1 = 1;
+				  SPIflag = 1;
  8000772:	4b53      	ldr	r3, [pc, #332]	; (80008c0 <main+0x214>)
  8000774:	2201      	movs	r2, #1
  8000776:	701a      	strb	r2, [r3, #0]
@@ -773,7 +773,7 @@ int main(void)
  800079c:	484e      	ldr	r0, [pc, #312]	; (80008d8 <main+0x22c>)
  800079e:	f003 fcc3 	bl	8004128 <HAL_I2C_Slave_Receive_DMA>
 			  //wait for the data to be received
-			  if(Timeout(&flag) == 0)
+			  if(Timeout(&I2Cflag) == 0)
  80007a2:	484e      	ldr	r0, [pc, #312]	; (80008dc <main+0x230>)
  80007a4:	f7ff ff57 	bl	8000656 <Timeout>
  80007a8:	4603      	mov	r3, r0
@@ -806,7 +806,7 @@ int main(void)
  80007d2:	4603      	mov	r3, r0
  80007d4:	4a3d      	ldr	r2, [pc, #244]	; (80008cc <main+0x220>)
  80007d6:	6013      	str	r3, [r2, #0]
-				  flag = 1;
+				  I2Cflag = 1;
  80007d8:	4b40      	ldr	r3, [pc, #256]	; (80008dc <main+0x230>)
  80007da:	2201      	movs	r2, #1
  80007dc:	701a      	strb	r2, [r3, #0]
@@ -837,7 +837,7 @@ int main(void)
  8000802:	4839      	ldr	r0, [pc, #228]	; (80008e8 <main+0x23c>)
  8000804:	f006 fe4a 	bl	800749c <HAL_UART_Transmit_DMA>
 			  //wait for the data to be received
-			  if(Timeout(&flag2) == 0)
+			  if(Timeout(&UARTflag) == 0)
  8000808:	4838      	ldr	r0, [pc, #224]	; (80008ec <main+0x240>)
  800080a:	f7ff ff24 	bl	8000656 <Timeout>
  800080e:	4603      	mov	r3, r0
@@ -870,7 +870,7 @@ int main(void)
  8000838:	4603      	mov	r3, r0
  800083a:	4a24      	ldr	r2, [pc, #144]	; (80008cc <main+0x220>)
  800083c:	6013      	str	r3, [r2, #0]
-				  flag2 = 1;
+				  UARTflag = 1;
  800083e:	4b2b      	ldr	r3, [pc, #172]	; (80008ec <main+0x240>)
  8000840:	2201      	movs	r2, #1
  8000842:	701a      	strb	r2, [r3, #0]
@@ -884,7 +884,7 @@ int main(void)
 	  /* USER CODE END WHILE */
 
 	  /* USER CODE BEGIN 3 */
-	  if(flag || flag1 ||flag2)
+	  if(I2Cflag || SPIflag ||UARTflag)
  800084a:	4b24      	ldr	r3, [pc, #144]	; (80008dc <main+0x230>)
  800084c:	781b      	ldrb	r3, [r3, #0]
  800084e:	2b00      	cmp	r3, #0
@@ -914,15 +914,15 @@ int main(void)
  8000878:	4a13      	ldr	r2, [pc, #76]	; (80008c8 <main+0x21c>)
  800087a:	4618      	mov	r0, r3
  800087c:	f7ff feba 	bl	80005f4 <udp_transmit>
-		  flag = 0;
+		  I2Cflag = 0;
  8000880:	4b16      	ldr	r3, [pc, #88]	; (80008dc <main+0x230>)
  8000882:	2200      	movs	r2, #0
  8000884:	701a      	strb	r2, [r3, #0]
-		  flag1 = 0;
+		  SPIflag = 0;
  8000886:	4b0e      	ldr	r3, [pc, #56]	; (80008c0 <main+0x214>)
  8000888:	2200      	movs	r2, #0
  800088a:	701a      	strb	r2, [r3, #0]
-		  flag2 = 0;
+		  UARTflag = 0;
  800088c:	4b17      	ldr	r3, [pc, #92]	; (80008ec <main+0x240>)
  800088e:	2200      	movs	r2, #0
  8000890:	701a      	strb	r2, [r3, #0]

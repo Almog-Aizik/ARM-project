@@ -23588,12 +23588,12 @@ LOAD d:/stm32cubeide_1.9.0/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externa
                 0x00000000200004fc                udp_info
  .bss.received  0x0000000020000500        0x1 ./Core/Src/main.o
                 0x0000000020000500                received
- .bss.flag      0x0000000020000501        0x1 ./Core/Src/main.o
-                0x0000000020000501                flag
- .bss.flag1     0x0000000020000502        0x1 ./Core/Src/main.o
-                0x0000000020000502                flag1
- .bss.flag2     0x0000000020000503        0x1 ./Core/Src/main.o
-                0x0000000020000503                flag2
+ .bss.I2Cflag   0x0000000020000501        0x1 ./Core/Src/main.o
+                0x0000000020000501                I2Cflag
+ .bss.SPIflag   0x0000000020000502        0x1 ./Core/Src/main.o
+                0x0000000020000502                SPIflag
+ .bss.UARTflag  0x0000000020000503        0x1 ./Core/Src/main.o
+                0x0000000020000503                UARTflag
  .bss.mem       0x0000000020000504       0x65 ./Core/Src/main.o
                 0x0000000020000504                mem
  *fill*         0x0000000020000569        0x3 
@@ -24420,82 +24420,82 @@ LOAD d:/stm32cubeide_1.9.0/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externa
  .debug_line    0x00000000000275af     0x12d8 ./Middlewares/Third_Party/LwIP/src/core/ipv4/ip4_frag.o
  .debug_line    0x0000000000028887      0xdd1 ./Middlewares/Third_Party/LwIP/src/netif/ethernet.o
 
-.debug_str      0x0000000000000000    0xef09e
- .debug_str     0x0000000000000000    0xe465c ./Core/Src/main.o
-                                      0xe4b88 (size before relaxing)
- .debug_str     0x00000000000e465c       0xd4 ./Core/Src/stm32f4xx_hal_msp.o
+.debug_str      0x0000000000000000    0xef0ab
+ .debug_str     0x0000000000000000    0xe4669 ./Core/Src/main.o
+                                      0xe4b95 (size before relaxing)
+ .debug_str     0x00000000000e4669       0xd4 ./Core/Src/stm32f4xx_hal_msp.o
                                       0xd7530 (size before relaxing)
- .debug_str     0x00000000000e4730      0x64a ./Core/Src/stm32f4xx_it.o
+ .debug_str     0x00000000000e473d      0x64a ./Core/Src/stm32f4xx_it.o
                                       0xd73ea (size before relaxing)
- .debug_str     0x00000000000e4d7a      0xf9e ./Core/Src/syscalls.o
+ .debug_str     0x00000000000e4d87      0xf9e ./Core/Src/syscalls.o
                                       0xdfdd3 (size before relaxing)
- .debug_str     0x00000000000e5d18       0x6b ./Core/Src/sysmem.o
+ .debug_str     0x00000000000e5d25       0x6b ./Core/Src/sysmem.o
                                       0xdf428 (size before relaxing)
- .debug_str     0x00000000000e5d83       0xdb ./Core/Src/system_stm32f4xx.o
+ .debug_str     0x00000000000e5d90       0xdb ./Core/Src/system_stm32f4xx.o
                                       0xd61b6 (size before relaxing)
- .debug_str     0x00000000000e5e5e      0x930 ./Core/Src/udpServerRAW.o
+ .debug_str     0x00000000000e5e6b      0x930 ./Core/Src/udpServerRAW.o
                                       0xe3a18 (size before relaxing)
- .debug_str     0x00000000000e678e       0x36 ./Core/Startup/startup_stm32f429zitx.o
+ .debug_str     0x00000000000e679b       0x36 ./Core/Startup/startup_stm32f429zitx.o
                                          0x52 (size before relaxing)
- .debug_str     0x00000000000e67c4      0x637 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
+ .debug_str     0x00000000000e67d1      0x637 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
                                       0xd6dd9 (size before relaxing)
- .debug_str     0x00000000000e6dfb      0x322 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
+ .debug_str     0x00000000000e6e08      0x322 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
                                       0xd6abe (size before relaxing)
- .debug_str     0x00000000000e711d      0x2dd ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.o
+ .debug_str     0x00000000000e712a      0x2dd ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.o
                                       0xd65bd (size before relaxing)
- .debug_str     0x00000000000e73fa      0x776 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.o
+ .debug_str     0x00000000000e7407      0x776 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.o
                                       0xd6da4 (size before relaxing)
- .debug_str     0x00000000000e7b70       0xfe ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o
+ .debug_str     0x00000000000e7b7d       0xfe ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o
                                       0xd6331 (size before relaxing)
- .debug_str     0x00000000000e7c6e      0xa5e ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.o
+ .debug_str     0x00000000000e7c7b      0xa5e ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.o
                                       0xd7173 (size before relaxing)
- .debug_str     0x00000000000e86cc       0x3b ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.o
+ .debug_str     0x00000000000e86d9       0x3b ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.o
                                       0xd6585 (size before relaxing)
- .debug_str     0x00000000000e8707      0x1ff ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o
+ .debug_str     0x00000000000e8714      0x1ff ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o
                                       0xd65ea (size before relaxing)
- .debug_str     0x00000000000e8906      0x4ff ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.o
+ .debug_str     0x00000000000e8913      0x4ff ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.o
                                       0xd6a67 (size before relaxing)
- .debug_str     0x00000000000e8e05      0x598 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.o
+ .debug_str     0x00000000000e8e12      0x598 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.o
                                       0xd6b76 (size before relaxing)
- .debug_str     0x00000000000e939d      0x3d7 ./LWIP/App/lwip.o
+ .debug_str     0x00000000000e93aa      0x3d7 ./LWIP/App/lwip.o
                                       0xe2f0c (size before relaxing)
- .debug_str     0x00000000000e9774      0x19b ./LWIP/Target/ethernetif.o
+ .debug_str     0x00000000000e9781      0x19b ./LWIP/Target/ethernetif.o
                                       0xe3d59 (size before relaxing)
- .debug_str     0x00000000000e990f       0xbd ./Middlewares/Third_Party/LwIP/src/core/def.o
+ .debug_str     0x00000000000e991c       0xbd ./Middlewares/Third_Party/LwIP/src/core/def.o
                                       0xdf244 (size before relaxing)
- .debug_str     0x00000000000e99cc     0x1c4d ./Middlewares/Third_Party/LwIP/src/core/init.o
+ .debug_str     0x00000000000e99d9     0x1c4d ./Middlewares/Third_Party/LwIP/src/core/init.o
                                       0xe5aaa (size before relaxing)
- .debug_str     0x00000000000eb619       0xde ./Middlewares/Third_Party/LwIP/src/core/ip.o
+ .debug_str     0x00000000000eb626       0xde ./Middlewares/Third_Party/LwIP/src/core/ip.o
                                       0xe3047 (size before relaxing)
- .debug_str     0x00000000000eb6f7      0x42e ./Middlewares/Third_Party/LwIP/src/core/mem.o
+ .debug_str     0x00000000000eb704      0x42e ./Middlewares/Third_Party/LwIP/src/core/mem.o
                                       0xe06ab (size before relaxing)
- .debug_str     0x00000000000ebb25      0x8c6 ./Middlewares/Third_Party/LwIP/src/core/memp.o
+ .debug_str     0x00000000000ebb32      0x8c6 ./Middlewares/Third_Party/LwIP/src/core/memp.o
                                       0xe60f2 (size before relaxing)
- .debug_str     0x00000000000ec3eb      0x7a2 ./Middlewares/Third_Party/LwIP/src/core/netif.o
+ .debug_str     0x00000000000ec3f8      0x7a2 ./Middlewares/Third_Party/LwIP/src/core/netif.o
                                       0xe60f8 (size before relaxing)
- .debug_str     0x00000000000ecb8d      0x6cb ./Middlewares/Third_Party/LwIP/src/core/pbuf.o
+ .debug_str     0x00000000000ecb9a      0x6cb ./Middlewares/Third_Party/LwIP/src/core/pbuf.o
                                       0xe5b54 (size before relaxing)
- .debug_str     0x00000000000ed258      0x638 ./Middlewares/Third_Party/LwIP/src/core/tcp.o
+ .debug_str     0x00000000000ed265      0x638 ./Middlewares/Third_Party/LwIP/src/core/tcp.o
                                       0xe58cc (size before relaxing)
- .debug_str     0x00000000000ed890      0x36a ./Middlewares/Third_Party/LwIP/src/core/tcp_in.o
+ .debug_str     0x00000000000ed89d      0x36a ./Middlewares/Third_Party/LwIP/src/core/tcp_in.o
                                       0xe5703 (size before relaxing)
- .debug_str     0x00000000000edbfa      0x35a ./Middlewares/Third_Party/LwIP/src/core/tcp_out.o
+ .debug_str     0x00000000000edc07      0x35a ./Middlewares/Third_Party/LwIP/src/core/tcp_out.o
                                       0xe5725 (size before relaxing)
- .debug_str     0x00000000000edf54      0x255 ./Middlewares/Third_Party/LwIP/src/core/timeouts.o
+ .debug_str     0x00000000000edf61      0x255 ./Middlewares/Third_Party/LwIP/src/core/timeouts.o
                                       0xe5bbe (size before relaxing)
- .debug_str     0x00000000000ee1a9      0x262 ./Middlewares/Third_Party/LwIP/src/core/udp.o
+ .debug_str     0x00000000000ee1b6      0x262 ./Middlewares/Third_Party/LwIP/src/core/udp.o
                                       0xe3f23 (size before relaxing)
- .debug_str     0x00000000000ee40b      0x583 ./Middlewares/Third_Party/LwIP/src/core/ipv4/etharp.o
+ .debug_str     0x00000000000ee418      0x583 ./Middlewares/Third_Party/LwIP/src/core/ipv4/etharp.o
                                       0xe3726 (size before relaxing)
- .debug_str     0x00000000000ee98e      0x103 ./Middlewares/Third_Party/LwIP/src/core/ipv4/icmp.o
+ .debug_str     0x00000000000ee99b      0x103 ./Middlewares/Third_Party/LwIP/src/core/ipv4/icmp.o
                                       0xe357a (size before relaxing)
- .debug_str     0x00000000000eea91       0xec ./Middlewares/Third_Party/LwIP/src/core/ipv4/ip4.o
+ .debug_str     0x00000000000eea9e       0xec ./Middlewares/Third_Party/LwIP/src/core/ipv4/ip4.o
                                       0xe53ff (size before relaxing)
- .debug_str     0x00000000000eeb7d       0xb1 ./Middlewares/Third_Party/LwIP/src/core/ipv4/ip4_addr.o
+ .debug_str     0x00000000000eeb8a       0xb1 ./Middlewares/Third_Party/LwIP/src/core/ipv4/ip4_addr.o
                                       0xe238e (size before relaxing)
- .debug_str     0x00000000000eec2e      0x3ed ./Middlewares/Third_Party/LwIP/src/core/ipv4/ip4_frag.o
+ .debug_str     0x00000000000eec3b      0x3ed ./Middlewares/Third_Party/LwIP/src/core/ipv4/ip4_frag.o
                                       0xe38ff (size before relaxing)
- .debug_str     0x00000000000ef01b       0x83 ./Middlewares/Third_Party/LwIP/src/netif/ethernet.o
+ .debug_str     0x00000000000ef028       0x83 ./Middlewares/Third_Party/LwIP/src/netif/ethernet.o
                                       0xe3b58 (size before relaxing)
 
 .comment        0x0000000000000000       0x50
