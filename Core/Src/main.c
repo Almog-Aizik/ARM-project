@@ -196,66 +196,75 @@ int main(void)
 	  if(received)
 	  {
 		  protocol = mem[0];
-
-		  if(protocol == '1')
+		  if(len >= 1)
 		  {
-			  //SPI send and receive
-			  HAL_SPI_Receive_DMA(&hspi2, (uint8_t *)send, len);
-			  HAL_SPI_Transmit_DMA(&hspi4, (uint8_t *)&mem[1], len);
-			  //wait for the data to be received
-			  if(Timeout(&SPIflag) == 0)
+			  if(protocol == '1')
 			  {
-				  //add header to the data
-				  UDPlen = sprintf(header, "SPI- %s\n\r", send);
-
+				  //SPI send and receive
+				  HAL_SPI_Receive_DMA(&hspi2, (uint8_t *)send, len);
+				  HAL_SPI_Transmit_DMA(&hspi4, (uint8_t *)&mem[1], len);
+				  //wait for the data to be received
+				  if(Timeout(&SPIflag) == 0)
+				  {
+					  //add header to the data
+					  UDPlen = sprintf(header, "SPI- %s\n\r", send);
+				  }
+				  //error handling
+				  else
+				  {
+					  ReleaseDMA(&hspi2, &hspi4);
+					  UDPlen = sprintf(header, "Error");
+					  SPIflag = 1;
+				  }
 			  }
-			  //error handling
+			  else if(protocol == '2')
+			  {
+				  //I2C send and receive
+				  HAL_I2C_Master_Transmit_DMA(&hi2c1, 20, (uint8_t *)&mem[1], len);
+				  HAL_I2C_Slave_Receive_DMA(&hi2c2, (uint8_t *)send, len);
+				  //wait for the data to be received
+				  if(Timeout(&I2Cflag) == 0)
+				  {
+					  //add a header to the data and prepare it to be sent back
+					  UDPlen = sprintf(header, "I2C- %s\n\r", send);
+				  }
+				  //error handling
+				  else
+				  {
+					  ReleaseDMA(&hi2c1, &hi2c2);
+					  UDPlen = sprintf(header, "Error");
+					  I2Cflag = 1;
+				  }
+			  }
+			  else if(protocol == '3')
+			  {
+				  //UART send and receive
+				  HAL_UART_Receive_DMA(&huart6, (uint8_t *)send, len);
+				  HAL_UART_Transmit_DMA(&huart4, (uint8_t *)&mem[1], len);
+				  //wait for the data to be received
+				  if(Timeout(&UARTflag) == 0)
+				  {
+					  //add a header to the data and prepare it to be sent back
+					  UDPlen = sprintf(header, "UART - %s\n\r", send);
+				  }
+				  //error handling
+				  else
+				  {
+					  ReleaseDMA(&hi2c1, &hi2c2);
+					  UDPlen = sprintf(header, "Error");
+					  UARTflag = 1;
+				  }
+			  }
 			  else
 			  {
-
-				  ReleaseDMA(&hspi2, &hspi4);
-				  UDPlen = sprintf(header, "Error");
-				  SPIflag = 1;
-			  }
-
-		  }
-		  else if(protocol == '2')
-		  {
-			  //I2C send and receive
-			  HAL_I2C_Master_Transmit_DMA(&hi2c1, 20, (uint8_t *)&mem[1], len);
-			  HAL_I2C_Slave_Receive_DMA(&hi2c2, (uint8_t *)send, len);
-			  //wait for the data to be received
-			  if(Timeout(&I2Cflag) == 0)
-			  {
-				  //add a header to the data and prepare it to be sent back
-				  UDPlen = sprintf(header, "I2C- %s\n\r", send);
-			  }
-			  //error handling
-			  else
-			  {
-				  ReleaseDMA(&hi2c1, &hi2c2);
-				  UDPlen = sprintf(header, "Error");
-				  I2Cflag = 1;
-			  }
-		  }
-		  else if(protocol == '3')
-		  {
-			  //UART send and receive
-			  HAL_UART_Receive_DMA(&huart6, (uint8_t *)send, len);
-			  HAL_UART_Transmit_DMA(&huart4, (uint8_t *)&mem[1], len);
-			  //wait for the data to be received
-			  if(Timeout(&UARTflag) == 0)
-			  {
-				  //add a header to the data and prepare it to be sent back
-				  UDPlen = sprintf(header, "UART - %s\n\r", send);
-			  }
-			  //error handling
-			  else
-			  {
-				  ReleaseDMA(&hi2c1, &hi2c2);
-				  UDPlen = sprintf(header, "Error");
+				  UDPlen = sprintf(header, "Unknown Protocol");
 				  UARTflag = 1;
 			  }
+		  }
+		  else
+		  {
+			  UDPlen = sprintf(header, "Empty Packet");
+			  UARTflag = 1;
 		  }
 		  received = 0;
 	  }

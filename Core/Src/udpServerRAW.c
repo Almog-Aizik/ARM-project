@@ -79,11 +79,14 @@ void udp_receive_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, const
 	/* save data for later use */
 	received = 1;
 	len = p->len - 1;
+	if(len > 100)
+		len = 100;
 	udp_info = upcb;
 	udp_info->remote_ip = *addr;
 	udp_info->remote_port = port;
 	memcpy(mem,(char*)p->payload,p->len);
 	/* free p buffer */
 	pbuf_free(p);
+
 }
 
